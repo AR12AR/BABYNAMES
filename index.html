@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BABYNAMES — Find the Perfect Name</title>
+<meta name="description" content="Discover thousands of beautiful baby names from American, British, French, Spanish, German, Australian, Canadian and New Zealand cultures.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a08;
+  --bg2: #111109;
+  --surface: #141410;
+  --card: #1a1a14;
+  --border: #2a2a1e;
+  --border2: #333325;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --gold3: #f5e0a0;
+  --gold-dark: #8a6f2e;
+  --gold-glow: rgba(201,168,76,0.18);
+  --gold-glow2: rgba(201,168,76,0.08);
+  --text: #f0ead8;
+  --text2: #c8bfa0;
+  --muted: #6b6248;
+  --white: #faf6ec;
+  --girl: #d4847a;
+  --boy: #6b92b8;
+  --shadow: 0 2px 24px rgba(0,0,0,0.4);
+  --shadow-gold: 0 4px 30px rgba(201,168,76,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== NOISE TEXTURE ===== */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:0; opacity:0.4;
+}
+
+/* Gold orbs */
+.orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; }
+.orb-1 { width:600px; height:600px; background:radial-gradient(var(--gold-dark),transparent 70%); top:-200px; right:-200px; opacity:0.12; animation:orbDrift 16s ease-in-out infinite alternate; }
+.orb-2 { width:400px; height:400px; background:radial-gradient(var(--gold-dark),transparent 70%); bottom:-100px; left:-100px; opacity:0.08; animation:orbDrift 20s ease-in-out infinite alternate-reverse; }
+@keyframes orbDrift { from{transform:translate(0,0);} to{transform:translate(30px,20px);} }
+
+/* ===== NAV ===== */
+nav {
+  position: sticky; top:0; z-index:100;
+  background: rgba(10,10,8,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-logo span { color: var(--gold3); }
+
+.nav-links { display:flex; gap:6px; }
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: none; border: none;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex; align-items: center;
+}
+
+.nav-link:hover { color: var(--gold); background: var(--gold-glow2); }
+.nav-link.active { color: var(--gold); }
+
+.nav-menu-btn {
+  display: none;
+  background: none; border: none;
+  color: var(--gold); font-size: 22px; cursor: pointer;
+}
+
+/* ===== PAGES ===== */
+.page { display:none; position:relative; z-index:1; }
+.page.active { display:block; }
+
+/* ===== AD SLOTS ===== */
+.ad-slot {
+  background: linear-gradient(135deg, var(--surface), var(--card));
+  border: 1px dashed var(--border2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 12px; letter-spacing: 1px;
+  text-transform: uppercase; font-weight: 600;
+  position: relative; overflow: hidden;
+}
+
+.ad-slot::before {
+  content: 'AD';
+  position: absolute; top: 8px; left: 10px;
+  font-size: 9px; color: var(--border2); letter-spacing: 2px;
+}
+
+.ad-top { width:100%; height:90px; margin-bottom:24px; }
+.ad-bottom { width:100%; height:90px; margin-top:32px; }
+.ad-sidebar { width:160px; min-height:600px; flex-shrink:0; }
+
+/* ===== LAYOUT WITH SIDEBARS ===== */
+.content-with-ads {
+  display: flex;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content { flex:1; min-width:0; }
+
+/* ===== HOME PAGE ===== */
+#page-home { animation: fadeIn 0.6s ease both; }
+
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+.hero {
+  text-align: center;
+  padding: 60px 20px 50px;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-glow2);
+  margin-bottom: 24px;
+  animation: fadeDown 0.7s ease both;
+}
+
+.hero-badge::before { content:'✦'; }
+
+h1.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+  animation: fadeDown 0.7s ease 0.05s both;
+}
+
+h1.hero-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  color: var(--muted); font-size: 15px;
+  margin-bottom: 40px;
+  animation: fadeDown 0.7s ease 0.1s both;
+}
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-14px);} to{opacity:1;transform:translateY(0);} }
+
+/* Gold divider */
+.gold-divider {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto 40px;
+}
+
+/* ===== GENDER TOGGLE ===== */
+.gender-row {
+  display: flex; justify-content: center; gap: 12px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.7s ease 0.15s both;
+}
+
+.gender-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: 100px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  letter-spacing: 0.5px;
+}
+
+.gender-btn:hover { border-color: var(--gold); color: var(--gold); }
+.gender-btn.active {
+  border-color: var(--gold);
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  box-shadow: 0 4px 20px var(--gold-glow);
+  transform: translateY(-2px);
+}
+
+/* ===== SEARCH ===== */
+.search-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.search-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.search-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.search-row { display:flex; gap:10px; align-items:center; }
+
+.letter-box {
+  width: 68px; height: 68px;
+  background: var(--bg2);
+  border: 2px solid var(--border2);
+  border-radius: 14px;
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px; font-weight: 700;
+  text-align: center; outline: none;
+  transition: all 0.3s;
+  text-transform: uppercase; flex-shrink:0;
+}
+
+.letter-box:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+.letter-box::placeholder { color: var(--border2); font-size:26px; }
+
+.name-box {
+  flex:1; height:68px;
+  background: var(--bg2);
+  border: 2px solid var(--border2);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; padding: 0 20px;
+  outline: none; transition: all 0.3s;
+}
+
+.name-box:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+.name-box::placeholder { color: var(--muted); }
+
+.search-btn {
+  height: 68px; padding: 0 24px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border: none; border-radius: 14px;
+  color: var(--bg); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.3s;
+  white-space: nowrap; flex-shrink:0;
+  box-shadow: 0 4px 20px var(--gold-glow);
+  letter-spacing: 0.5px;
+}
+
+.search-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow: 0 8px 30px var(--gold-glow); }
+.search-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+.stop-btn {
+  height: 68px; padding: 0 18px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+  flex-shrink:0; display:none;
+}
+
+.stop-btn:hover { border-color: #e87070; color: #e87070; }
+.stop-btn.show { display:flex; align-items:center; gap:6px; }
+
+/* ===== FILTERS ===== */
+.filters-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.7s ease 0.25s both;
+}
+
+.filter-group { margin-bottom: 14px; }
+.filter-group:last-child { margin-bottom:0; }
+
+.filter-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+
+.chips { display:flex; gap:7px; flex-wrap:wrap; }
+
+.chip {
+  padding: 6px 14px; border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chip:hover { border-color: var(--gold); color: var(--gold); }
+.chip.active {
+  background: var(--gold-glow2);
+  border-color: var(--gold);
+  color: var(--gold); font-weight: 700;
+}
+
+/* ===== LANG SWITCH ===== */
+.lang-switch {
+  display: flex; justify-content: center;
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease 0.12s both;
+}
+
+.lang-toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px; gap: 2px;
+}
+
+.lang-btn {
+  padding: 7px 18px; border-radius: 100px;
+  border: none; background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+  letter-spacing: 0.3px;
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: var(--bg);
+}
+
+/* ===== LOADING ===== */
+.loading-wrap { display:none; text-align:center; padding:50px 20px; }
+.loading-wrap.show { display:block; }
+
+.loader { display:inline-flex; gap:5px; margin-bottom:14px; }
+.ldot {
+  width:7px; height:7px; border-radius:50%;
+  background: var(--gold);
+  animation: ldotBounce 1.2s ease-in-out infinite;
+}
+.ldot:nth-child(2){animation-delay:0.15s;} .ldot:nth-child(3){animation-delay:0.3s;}
+@keyframes ldotBounce { 0%,100%{transform:translateY(0);opacity:0.3;} 50%{transform:translateY(-10px);opacity:1;} }
+
+.loading-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; color: var(--muted); font-style: italic;
+}
+
+/* ===== RESULTS ===== */
+.results-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px; padding: 0 2px;
+}
+
+.results-count {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; color: var(--muted);
+}
+
+.results-count strong { color: var(--gold); }
+
+.fav-toggle {
+  padding: 6px 14px; border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+  display:flex; align-items:center; gap:5px;
+}
+
+.fav-toggle:hover { border-color:var(--gold); color:var(--gold); }
+
+/* ===== NAMES GRID ===== */
+.names-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+}
+
+/* ===== NAME CARD ===== */
+.name-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  animation: cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.name-card:hover {
+  border-color: var(--gold-dark);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-3px);
+}
+
+@keyframes cardIn { from{opacity:0;transform:translateY(14px) scale(0.97);} to{opacity:1;transform:none;} }
+
+.card-top {
+  padding: 20px 20px 14px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap:10px;
+}
+
+.name-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 600;
+  color: var(--text2); line-height: 1.1;
+  margin-bottom: 4px;
+  transition: color 0.3s;
+}
+
+.name-card:hover .name-text { color: var(--gold); }
+
+.name-phonetic {
+  font-size: 12px; color: var(--muted);
+  font-style: italic;
+}
+
+.card-actions { display:flex; gap:6px; flex-shrink:0; }
+
+.heart-btn, .share-btn {
+  background: none; border: none;
+  font-size: 18px; cursor: pointer; padding: 3px;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  line-height:1;
+}
+
+.heart-btn:hover, .share-btn:hover { transform: scale(1.35); }
+.heart-btn.pop { animation: heartPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes heartPop { 0%{transform:scale(1);} 50%{transform:scale(1.6);} 100%{transform:scale(1);} }
+
+.card-tags {
+  display:flex; gap:5px; flex-wrap:wrap;
+  padding: 0 20px 12px;
+}
+
+.ctag {
+  padding: 3px 9px; border-radius: 100px;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.15);
+  color: var(--gold-dark);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+}
+
+/* Expand */
+.expand-btn {
+  width:100%; background:none;
+  border:none; border-top: 1px solid var(--border);
+  padding: 10px 20px;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  cursor:pointer; transition: background 0.2s;
+  color: var(--muted);
+}
+
+.expand-btn:hover { background: var(--gold-glow2); }
+
+.expand-lbl {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.expand-btn:hover .expand-lbl { color: var(--gold); }
+
+.expand-arr {
+  color: var(--gold); font-size: 13px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  display:inline-block; line-height:1;
+}
+
+.name-card.open .expand-arr { transform: rotate(180deg); }
+
+/* Slide */
+.slide-panel {
+  max-height:0; overflow:hidden;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.name-card.open .slide-panel {
+  max-height: 500px;
+  border-top: 1px solid var(--border);
+}
+
+.slide-inner {
+  padding: 18px 20px 20px;
+  opacity:0; transform:translateY(-6px);
+  transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+}
+
+.name-card.open .slide-inner { opacity:1; transform:translateY(0); }
+
+.drow { display:flex; gap:10px; margin-bottom:13px; align-items:flex-start; }
+.drow:last-child { margin-bottom:0; }
+
+.dicon {
+  width:26px; height:26px; border-radius:7px;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.12);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; flex-shrink:0;
+}
+
+.dkey {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 3px;
+}
+
+.dval { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+.pop-track {
+  height: 3px; background: var(--border);
+  border-radius: 999px; margin-top:7px; overflow:hidden;
+}
+
+.pop-fill {
+  height:100%;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+  border-radius:999px; width:0%;
+  transition: width 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s;
+}
+
+.name-card.open .pop-fill { width: var(--pop); }
+
+.sim-wrap { display:flex; gap:5px; flex-wrap:wrap; margin-top:6px; }
+
+.sim-chip {
+  padding: 3px 10px; border-radius:100px;
+  border: 1px solid var(--border);
+  color: var(--muted); cursor:pointer;
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px; transition:all 0.2s;
+}
+
+.sim-chip:hover { border-color:var(--gold); color:var(--gold); }
+
+/* ===== FAVORITES ===== */
+.fav-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  display:none;
+}
+
+.fav-panel.show { display:block; animation: fadeUp 0.4s ease both; }
+
+.fav-header {
+  display:flex; align-items:center;
+  justify-content:space-between; margin-bottom:14px;
+}
+
+.fav-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600; color: var(--gold);
+}
+
+.clear-btn {
+  background:none; border:1px solid var(--border);
+  border-radius:8px; padding:5px 12px;
+  font-size:11px; color:var(--muted);
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+
+.clear-btn:hover { border-color:#e87070; color:#e87070; }
+
+.fav-chips { display:flex; gap:7px; flex-wrap:wrap; }
+
+.fav-chip {
+  display:flex; align-items:center; gap:5px;
+  padding:7px 13px; border-radius:100px;
+  background: var(--gold-glow2);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold);
+  font-family:'Cormorant Garamond',serif; font-size:15px;
+  animation: chipIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes chipIn { from{opacity:0;transform:scale(0.7);} to{opacity:1;transform:scale(1);} }
+
+.fav-rm {
+  background:none; border:none; color:var(--muted);
+  cursor:pointer; font-size:11px; line-height:1; padding:0;
+  transition:color 0.2s;
+}
+
+.fav-rm:hover { color:#e87070; }
+
+/* ===== WELCOME STATE ===== */
+.welcome-state { text-align:center; padding:70px 20px; }
+.welcome-icon { font-size:50px; margin-bottom:16px; }
+.welcome-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px; font-weight:300; font-style:italic;
+  color:var(--text2); margin-bottom:8px;
+}
+.welcome-sub { color:var(--muted); font-size:14px; line-height:1.7; }
+
+/* ===== ERROR ===== */
+.err-msg {
+  display:none;
+  background: rgba(232,112,112,0.08);
+  border:1px solid rgba(232,112,112,0.2);
+  border-radius:12px; padding:13px 16px;
+  color:#e87070; font-size:13px; margin-top:12px;
+}
+
+.err-msg.show { display:flex; gap:8px; align-items:center; }
+
+/* ===== TRENDING ===== */
+.trending-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px; font-weight:600; color:var(--gold);
+  margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.trending-list { display:flex; gap:8px; flex-wrap:wrap; }
+
+.trend-item {
+  padding: 8px 16px; border-radius:100px;
+  border:1px solid var(--border);
+  background: var(--card);
+  color: var(--text2);
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px; cursor:pointer;
+  transition:all 0.2s;
+  display:flex; align-items:center; gap:6px;
+}
+
+.trend-item:hover { border-color:var(--gold); color:var(--gold); }
+.trend-num { font-size:10px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+
+/* ===== SHARE MODAL ===== */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);
+  z-index:1000;
+  display:none; align-items:center; justify-content:center;
+  padding:20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.show { display:flex; }
+
+.share-modal {
+  background: var(--card);
+  border:1px solid var(--border2);
+  border-radius:24px;
+  padding:30px;
+  max-width:420px; width:100%;
+  position:relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes modalIn { from{opacity:0;transform:scale(0.9) translateY(20px);} to{opacity:1;transform:none;} }
+
+.modal-close {
+  position:absolute; top:16px; right:16px;
+  background:none; border:none;
+  color:var(--muted); font-size:20px;
+  cursor:pointer; transition:color 0.2s;
+}
+
+.modal-close:hover { color:var(--text); }
+
+/* Share card preview */
+.share-card-preview {
+  background: linear-gradient(135deg, #111109, #1a1a10);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:28px 24px;
+  margin-bottom:20px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.share-card-preview::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(201,168,76,0.1), transparent 60%);
+}
+
+.share-card-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px; font-weight:700;
+  letter-spacing:3px; color:var(--gold);
+  margin-bottom:16px; opacity:0.7;
+}
+
+.share-card-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:44px; font-weight:700;
+  background:linear-gradient(135deg,var(--gold),var(--gold3));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.1; margin-bottom:8px;
+}
+
+.share-card-meaning {
+  font-size:13px; color:var(--text2);
+  line-height:1.6; margin-bottom:16px;
+  font-style:italic;
+}
+
+.share-card-divider {
+  width:40px; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:0 auto 14px;
+}
+
+.share-card-cta {
+  font-size:11px; color:var(--muted);
+  letter-spacing:2px; text-transform:uppercase;
+  font-weight:600;
+}
+
+.share-card-cta span { color:var(--gold); }
+
+/* Share buttons */
+.share-modal-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; color:var(--text2);
+  margin-bottom:14px; text-align:center;
+}
+
+.share-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+.share-platform-btn {
+  padding:11px 14px; border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text2);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; gap:8px;
+}
+
+.share-platform-btn:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-glow2); }
+
+/* ===== CONFETTI ===== */
+.confetti-bit {
+  position:fixed; width:7px; height:7px;
+  border-radius:1px; pointer-events:none;
+  z-index:9999;
+  animation:confettiFall 1.4s ease-out forwards;
+}
+
+@keyframes confettiFall { 0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);} 100%{opacity:0;transform:translateY(150px) rotate(600deg) scale(0.2);} }
+
+/* ===== ABOUT PAGE ===== */
+.page-inner {
+  max-width:800px; margin:0 auto; padding:60px 24px;
+  animation:fadeIn 0.6s ease both;
+}
+
+.page-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,6vw,60px); font-weight:300;
+  line-height:1.1; margin-bottom:8px;
+}
+
+.page-title em { font-style:italic; color:var(--gold); }
+
+.page-intro {
+  font-size:16px; color:var(--text2); line-height:1.8;
+  margin-bottom:40px; font-family:'DM Sans',sans-serif;
+}
+
+.about-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-bottom:40px; }
+
+.about-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:22px;
+  transition:border-color 0.3s, box-shadow 0.3s;
+}
+
+.about-card:hover { border-color:var(--gold-dark); box-shadow:var(--shadow-gold); }
+
+.about-card-icon { font-size:28px; margin-bottom:10px; }
+.about-card-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--gold); margin-bottom:6px; }
+.about-card-text { font-size:13px; color:var(--muted); line-height:1.7; }
+
+/* ===== CONTACT PAGE ===== */
+.contact-form {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:36px;
+  max-width:600px;
+}
+
+.form-group { margin-bottom:20px; }
+
+.form-label {
+  display:block; font-size:10px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:var(--gold); margin-bottom:8px;
+}
+
+.form-input, .form-textarea {
+  width:100%; background:var(--bg2);
+  border:1.5px solid var(--border2);
+  border-radius:12px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  outline:none; transition:all 0.3s;
+  padding:14px 16px;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color:var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.form-textarea { resize:vertical; min-height:120px; }
+
+.form-input::placeholder, .form-textarea::placeholder { color:var(--muted); }
+
+.form-btn {
+  padding:14px 32px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none; border-radius:12px;
+  color:var(--bg); font-family:'DM Sans',sans-serif;
+  font-size:14px; font-weight:700;
+  cursor:pointer; transition:all 0.3s;
+  box-shadow:0 4px 20px var(--gold-glow);
+  letter-spacing:0.5px;
+}
+
+.form-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--gold-glow); }
+
+/* ===== PRIVACY PAGE ===== */
+.privacy-content h2 {
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px; font-weight:600; color:var(--gold);
+  margin:32px 0 10px;
+}
+
+.privacy-content p {
+  font-size:14px; color:var(--text2); line-height:1.9;
+  margin-bottom:12px;
+}
+
+.privacy-content ul {
+  padding-right:20px; margin-bottom:12px;
+}
+
+.privacy-content li {
+  font-size:14px; color:var(--text2); line-height:1.9;
+  margin-bottom:6px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position:relative; z-index:1;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:40px 24px 24px;
+  margin-top:60px;
+}
+
+.footer-inner {
+  max-width:1200px; margin:0 auto;
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:40px; margin-bottom:32px;
+}
+
+.footer-brand .brand-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px; font-weight:700; color:var(--gold);
+  letter-spacing:2px; margin-bottom:8px;
+}
+
+.footer-brand p { font-size:13px; color:var(--muted); line-height:1.7; }
+
+.footer-links h4 {
+  font-size:10px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; color:var(--muted); margin-bottom:12px;
+}
+
+.footer-link {
+  display:block; color:var(--muted); font-size:13px;
+  text-decoration:none; cursor:pointer;
+  margin-bottom:8px; transition:color 0.2s;
+}
+
+.footer-link:hover { color:var(--gold); }
+
+.footer-bottom {
+  border-top:1px solid var(--border);
+  padding-top:20px; text-align:center;
+  font-size:12px; color:var(--muted);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .ad-sidebar { display:none; }
+  .footer-inner { grid-template-columns:1fr 1fr; }
+}
+
+@media(max-width:600px){
+  .search-row { flex-wrap:wrap; }
+  .letter-box { width:60px; height:60px; font-size:28px; }
+  .name-box { height:60px; font-size:17px; }
+  .search-btn, .stop-btn { height:52px; }
+  .search-btn { flex:1; }
+  .names-grid { grid-template-columns:1fr; }
+  .gender-btn { padding:10px 20px; font-size:13px; }
+  .nav-links { display:none; }
+  .nav-menu-btn { display:block; }
+  .footer-inner { grid-template-columns:1fr; gap:24px; }
+  .share-btns { grid-template-columns:1fr; }
+  .content-with-ads { padding:0 12px; }
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">BABY<span>NAMES</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">🏠 Home</button>
+    <button class="nav-link" onclick="showPage('about')">ℹ️ About</button>
+    <button class="nav-link" onclick="showPage('privacy')">🔒 Privacy</button>
+    <button class="nav-link" onclick="showPage('contact')">✉️ Contact</button>
+  </div>
+  <button class="nav-menu-btn" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div class="page active" id="page-home">
+
+  <!-- Ad Top -->
+  <div style="max-width:1280px;margin:16px auto 0;padding:0 20px;">
+    <div class="ad-slot ad-top">
+      <span>Advertisement · 728×90</span>
+    </div>
+  </div>
+
+  <div class="content-with-ads">
+    <!-- Left sidebar ad -->
+    <div class="ad-slot ad-sidebar" style="margin-top:20px;">
+      <span style="writing-mode:vertical-rl;transform:rotate(180deg)">Advertisement · 160×600</span>
+    </div>
+
+    <div class="main-content">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-badge">Find the Perfect Name</div>
+        <h1 class="hero-title">Every Name<br>Tells a <em>Story</em></h1>
+        <p class="hero-sub">Discover beautiful baby names from 8 cultures worldwide</p>
+        <div class="gold-divider"></div>
+      </div>
+
+      <!-- Lang switch -->
+      <div class="lang-switch">
+        <div class="lang-toggle">
+          <button class="lang-btn active" data-lang="en" onclick="setLang('en')">🇺🇸 English</button>
+          <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">🇸🇦 العربية</button>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="gender-row">
+        <button class="gender-btn active" data-gender="girl" onclick="setGender('girl')">♀ <span id="girlLbl">Girl</span></button>
+        <button class="gender-btn" data-gender="boy" onclick="setGender('boy')">♂ <span id="boyLbl">Boy</span></button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <div class="search-label" id="searchLbl">Search by first letter or name</div>
+        <div class="search-row">
+          <input type="text" class="letter-box" id="letterIn" maxlength="1" placeholder="A">
+          <input type="text" class="name-box" id="nameIn" placeholder="or type a name / meaning...">
+          <button class="search-btn" id="searchBtn" onclick="doSearch()">Search ✦</button>
+          <button class="stop-btn" id="stopBtn" onclick="stopSearch()">⏹ Stop</button>
+        </div>
+        <div class="err-msg" id="errMsg"><span>⚠️</span><span id="errTxt"></span></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-wrap">
+        <div class="filter-group">
+          <div class="filter-label" id="cultureLbl">Culture / Origin</div>
+          <div class="chips">
+            <button class="chip active" data-culture="all" onclick="setFilter('culture','all')">All</button>
+            <button class="chip" data-culture="american" onclick="setFilter('culture','american')">🇺🇸 American</button>
+            <button class="chip" data-culture="british" onclick="setFilter('culture','british')">🇬🇧 British</button>
+            <button class="chip" data-culture="french" onclick="setFilter('culture','french')">🇫🇷 French</button>
+            <button class="chip" data-culture="canadian" onclick="setFilter('culture','canadian')">🇨🇦 Canadian</button>
+            <button class="chip" data-culture="spanish" onclick="setFilter('culture','spanish')">🇪🇸 Spanish</button>
+            <button class="chip" data-culture="newzealand" onclick="setFilter('culture','newzealand')">🇳🇿 NZ</button>
+            <button class="chip" data-culture="australian" onclick="setFilter('culture','australian')">🇦🇺 Australian</button>
+            <button class="chip" data-culture="german" onclick="setFilter('culture','german')">🇩🇪 German</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label" id="styleLbl">Style / Era</div>
+          <div class="chips">
+            <button class="chip active" data-style="all" onclick="setFilter('style','all')">All</button>
+            <button class="chip" data-style="modern" onclick="setFilter('style','modern')">✦ Modern 2020+</button>
+            <button class="chip" data-style="classic" onclick="setFilter('style','classic')">👑 Classic</button>
+            <button class="chip" data-style="vintage" onclick="setFilter('style','vintage')">🎞 Vintage 80s/90s</button>
+            <button class="chip" data-style="short" onclick="setFilter('style','short')">⚡ Short & Simple</button>
+            <button class="chip" data-style="rare" onclick="setFilter('style','rare')">💎 Rare & Unique</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trending -->
+      <div class="trending-section" id="trendingSection">
+        <div class="section-title">🔥 Trending Now</div>
+        <div class="trending-list" id="trendingList"></div>
+      </div>
+
+      <!-- Favorites -->
+      <div class="fav-panel" id="favPanel">
+        <div class="fav-header">
+          <div class="fav-title">❤️ <span id="favTitleTxt">Favourites</span></div>
+          <button class="clear-btn" id="clearLbl" onclick="clearFavs()">Clear all</button>
+        </div>
+        <div class="fav-chips" id="favChips"></div>
+      </div>
+
+      <!-- Results bar -->
+      <div class="results-bar" id="resultsBar" style="display:none">
+        <div class="results-count" id="resultsCnt"></div>
+        <button class="fav-toggle" onclick="toggleFavPanel()">❤️ <span id="favCntLbl">0 saved</span></button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-wrap" id="loadWrap">
+        <div class="loader"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <div class="loading-text" id="loadTxt">Finding beautiful names...</div>
+      </div>
+
+      <!-- Grid -->
+      <div class="names-grid" id="namesGrid">
+        <div class="welcome-state" style="grid-column:1/-1">
+          <div class="welcome-icon">✦</div>
+          <div class="welcome-title" id="welcomeTitle">Begin your search</div>
+          <div class="welcome-sub" id="welcomeSub">Type a letter to discover names, or explore by culture and style.</div>
+        </div>
+      </div>
+
+      <!-- Ad bottom -->
+      <div class="ad-slot ad-bottom">
+        <span>Advertisement · 728×90</span>
+      </div>
+
+    </div><!-- end main-content -->
+
+    <!-- Right sidebar ad -->
+    <div class="ad-slot ad-sidebar" style="margin-top:20px;">
+      <span style="writing-mode:vertical-rl;transform:rotate(180deg)">Advertisement · 160×600</span>
+    </div>
+
+  </div><!-- end content-with-ads -->
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div class="page" id="page-about">
+  <div class="page-inner">
+    <div class="hero-badge" style="margin-bottom:20px">Our Story</div>
+    <h2 class="page-title">About <em>BABYNAMES</em></h2>
+    <p class="page-intro">We believe every child deserves a name that carries meaning, beauty, and cultural richness. BABYNAMES is your trusted companion in the most meaningful decision you'll ever make.</p>
+
+    <div class="gold-divider" style="margin-bottom:36px;margin-left:0;"></div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-card-icon">🌍</div>
+        <div class="about-card-title">8 Cultures</div>
+        <div class="about-card-text">Names from American, British, French, Canadian, Spanish, Australian, New Zealand, and German traditions.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">✦</div>
+        <div class="about-card-title">Unlimited Names</div>
+        <div class="about-card-text">Our AI-powered engine generates thousands of unique names tailored to your preferences and style.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">📖</div>
+        <div class="about-card-title">Rich Meanings</div>
+        <div class="about-card-text">Every name comes with its etymology, cultural origin, pronunciation guide, and popularity rating.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🌙</div>
+        <div class="about-card-title">Bilingual</div>
+        <div class="about-card-text">Full support for English and Arabic, making BABYNAMES accessible to families worldwide.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">💎</div>
+        <div class="about-card-title">Free Forever</div>
+        <div class="about-card-text">All features are completely free. No registration, no hidden fees, no limits.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">📱</div>
+        <div class="about-card-title">Share & Save</div>
+        <div class="about-card-text">Save your favourite names and share beautiful cards with family and friends on social media.</div>
+      </div>
+    </div>
+
+    <div class="ad-slot" style="height:250px;margin-top:16px;">
+      <span>Advertisement · 300×250</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRIVACY PAGE ===== -->
+<div class="page" id="page-privacy">
+  <div class="page-inner">
+    <div class="hero-badge" style="margin-bottom:20px">Legal</div>
+    <h2 class="page-title"><em>Privacy</em> Policy</h2>
+    <p class="page-intro">Last updated: 2025. Your privacy matters to us.</p>
+    <div class="gold-divider" style="margin-bottom:36px;margin-left:0;"></div>
+
+    <div class="privacy-content">
+      <h2>1. Information We Collect</h2>
+      <p>BABYNAMES does not require registration or account creation. We collect minimal information necessary to provide our services.</p>
+      <ul>
+        <li>Search queries (names and letters) — used only to generate results</li>
+        <li>Basic analytics data (page views, country, browser type) via Google Analytics</li>
+        <li>Favourites saved locally in your browser (we do not have access to this data)</li>
+      </ul>
+
+      <h2>2. How We Use Information</h2>
+      <p>We use the information collected to:</p>
+      <ul>
+        <li>Improve our name database and search results</li>
+        <li>Understand how users interact with the website</li>
+        <li>Display relevant advertisements through Google AdSense</li>
+      </ul>
+
+      <h2>3. Cookies</h2>
+      <p>We use cookies for analytics and advertising purposes. By using BABYNAMES, you consent to our use of cookies. You can disable cookies in your browser settings at any time.</p>
+
+      <h2>4. Third-Party Advertising</h2>
+      <p>We use Google AdSense to display advertisements. Google may use cookies to serve ads based on your prior visits to our website or other websites. You can opt out of personalized advertising by visiting Google's Ads Settings.</p>
+
+      <h2>5. Data Security</h2>
+      <p>We take reasonable precautions to protect your information. All data transmission is encrypted via HTTPS. Your favourites are stored only in your local browser and are never transmitted to our servers.</p>
+
+      <h2>6. Children's Privacy</h2>
+      <p>BABYNAMES is designed for expectant parents and does not knowingly collect personal information from children under 13.</p>
+
+      <h2>7. Contact</h2>
+      <p>If you have questions about this Privacy Policy, please contact us through our Contact page.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTACT PAGE ===== -->
+<div class="page" id="page-contact">
+  <div class="page-inner">
+    <div class="hero-badge" style="margin-bottom:20px">Get in Touch</div>
+    <h2 class="page-title">Contact <em>Us</em></h2>
+    <p class="page-intro">Have a suggestion, found an error, or want to collaborate? We'd love to hear from you.</p>
+    <div class="gold-divider" style="margin-bottom:36px;margin-left:0;"></div>
+
+    <div class="contact-form">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" placeholder="John Smith">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="hello@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" class="form-input" placeholder="Suggestion / Bug Report / Partnership...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Write your message here..."></textarea>
+      </div>
+      <button class="form-btn" onclick="submitForm(this)">Send Message ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="brand-name">BABYNAMES</div>
+      <p>Discover the perfect name for your little one from thousands of beautiful names across 8 cultures worldwide.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      <span class="footer-link" onclick="showPage('home')">🏠 Home</span>
+      <span class="footer-link" onclick="showPage('about')">ℹ️ About</span>
+      <span class="footer-link" onclick="showPage('contact')">✉️ Contact</span>
+      <span class="footer-link" onclick="showPage('privacy')">🔒 Privacy Policy</span>
+    </div>
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <span class="footer-link" onclick="quickSearch('girl','american')">🇺🇸 American Names</span>
+      <span class="footer-link" onclick="quickSearch('girl','british')">🇬🇧 British Names</span>
+      <span class="footer-link" onclick="quickSearch('girl','french')">🇫🇷 French Names</span>
+      <span class="footer-link" onclick="quickSearch('boy','spanish')">🇪🇸 Spanish Names</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 BABYNAMES.live · Made with ❤️ for new parents everywhere
+  </div>
+</footer>
+
+<!-- ===== SHARE MODAL ===== -->
+<div class="modal-overlay" id="shareModal" onclick="closeShareModal(event)">
+  <div class="share-modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="share-card-preview" id="sharePreview">
+      <div class="share-card-logo">BABYNAMES.LIVE</div>
+      <div class="share-card-name" id="shareCardName">Emma</div>
+      <div class="share-card-divider"></div>
+      <div class="share-card-meaning" id="shareCardMeaning">Whole or universal, a name of timeless beauty</div>
+      <div class="share-card-divider"></div>
+      <div class="share-card-cta">Find your perfect name at <span>BABYNAMES.LIVE</span></div>
+    </div>
+    <div class="share-modal-title">Share this name</div>
+    <div class="share-btns">
+      <button class="share-platform-btn" onclick="shareOn('facebook')">📘 Facebook</button>
+      <button class="share-platform-btn" onclick="shareOn('twitter')">🐦 Twitter / X</button>
+      <button class="share-platform-btn" onclick="shareOn('whatsapp')">💬 WhatsApp</button>
+      <button class="share-platform-btn" onclick="shareOn('pinterest')">📌 Pinterest</button>
+      <button class="share-platform-btn" onclick="shareOn('instagram')">📷 Instagram</button>
+      <button class="share-platform-btn" onclick="copyLink()">🔗 Copy Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOBILE MENU ===== -->
+<div id="mobileMenu" style="display:none;position:fixed;top:64px;left:0;right:0;background:rgba(10,10,8,0.98);border-bottom:1px solid var(--border);z-index:99;padding:12px 20px;backdrop-filter:blur(20px);">
+  <button class="nav-link" style="display:block;width:100%;text-align:right;padding:12px 16px;" onclick="showPage('home');toggleMobileMenu()">🏠 Home</button>
+  <button class="nav-link" style="display:block;width:100%;text-align:right;padding:12px 16px;" onclick="showPage('about');toggleMobileMenu()">ℹ️ About</button>
+  <button class="nav-link" style="display:block;width:100%;text-align:right;padding:12px 16px;" onclick="showPage('privacy');toggleMobileMenu()">🔒 Privacy</button>
+  <button class="nav-link" style="display:block;width:100%;text-align:right;padding:12px 16px;" onclick="showPage('contact');toggleMobileMenu()">✉️ Contact</button>
+</div>
+
+<script>
+// ===== DATA =====
+const NAMES_DB = {
+  girl: [
+    {name:"Emma",pronunciation:"EH-muh",meaning:"Whole and universal",meaningAr:"الكاملة والشاملة",origin:"Germanic",originAr:"جرماني",culture:"american",style:"classic",popularity:97,similar:["Ava","Olivia","Isla"]},
+    {name:"Olivia",pronunciation:"oh-LIV-ee-uh",meaning:"Olive tree, symbol of peace",meaningAr:"شجرة الزيتون رمز السلام",origin:"Latin",originAr:"لاتيني",culture:"american",style:"classic",popularity:98,similar:["Sophia","Isabella","Mia"]},
+    {name:"Ava",pronunciation:"AY-vuh",meaning:"Life and living",meaningAr:"الحياة والحيوية",origin:"Latin",originAr:"لاتيني",culture:"american",style:"classic",popularity:96,similar:["Eva","Aria","Luna"]},
+    {name:"Sophia",pronunciation:"so-FEE-uh",meaning:"Wisdom and knowledge",meaningAr:"الحكمة والمعرفة",origin:"Greek",originAr:"يوناني",culture:"american",style:"classic",popularity:95,similar:["Sofia","Sophie","Chloe"]},
+    {name:"Mia",pronunciation:"MEE-uh",meaning:"Mine, beloved",meaningAr:"حبيبتي",origin:"Scandinavian",originAr:"إسكندنافي",culture:"american",style:"short",popularity:94,similar:["Mia","Lia","Zoe"]},
+    {name:"Luna",pronunciation:"LOO-nuh",meaning:"The moon",meaningAr:"القمر",origin:"Latin",originAr:"لاتيني",culture:"american",style:"modern",popularity:93,similar:["Stella","Aurora","Nova"]},
+    {name:"Aria",pronunciation:"AR-ee-uh",meaning:"Air, melody",meaningAr:"الهواء واللحن",origin:"Italian",originAr:"إيطالي",culture:"american",style:"modern",popularity:90,similar:["Ariel","Lyra","Sera"]},
+    {name:"Chloe",pronunciation:"KLOH-ee",meaning:"Blooming, fertility",meaningAr:"المزهرة والخصبة",origin:"Greek",originAr:"يوناني",culture:"american",style:"classic",popularity:88,similar:["Zoe","Lily","Gracie"]},
+    {name:"Isla",pronunciation:"EYE-luh",meaning:"Island",meaningAr:"الجزيرة",origin:"Scottish",originAr:"اسكتلندي",culture:"british",style:"rare",popularity:85,similar:["Isadora","Iris","Ivy"]},
+    {name:"Freya",pronunciation:"FRAY-uh",meaning:"Goddess of love and beauty",meaningAr:"إلهة الحب والجمال",origin:"Norse",originAr:"نوردي",culture:"british",style:"vintage",popularity:84,similar:["Flora","Fern","Phoebe"]},
+    {name:"Poppy",pronunciation:"POP-ee",meaning:"Red flower, remembrance",meaningAr:"زهرة الخشخاش الحمراء",origin:"English",originAr:"إنجليزي",culture:"british",style:"vintage",popularity:82,similar:["Penelope","Pearl","Polly"]},
+    {name:"Imogen",pronunciation:"IM-oh-jen",meaning:"Maiden",meaningAr:"الفتاة العذراء",origin:"Celtic",originAr:"سلتيك",culture:"british",style:"rare",popularity:75,similar:["Ingrid","Iris","Ivy"]},
+    {name:"Amélie",pronunciation:"AH-meh-lee",meaning:"Hardworking, industrious",meaningAr:"المجدة والمثابرة",origin:"French",originAr:"فرنسي",culture:"french",style:"classic",popularity:86,similar:["Amelia","Amelie","Emilie"]},
+    {name:"Céleste",pronunciation:"seh-LEST",meaning:"Heavenly, of the sky",meaningAr:"السماوية العلوية",origin:"French",originAr:"فرنسي",culture:"french",style:"rare",popularity:72,similar:["Celine","Claire","Camille"]},
+    {name:"Margot",pronunciation:"MAR-goh",meaning:"Pearl",meaningAr:"اللؤلؤة",origin:"French",originAr:"فرنسي",culture:"french",style:"vintage",popularity:80,similar:["Margaux","Marion","Manon"]},
+    {name:"Inès",pronunciation:"ee-NES",meaning:"Pure, chaste",meaningAr:"الطاهرة النقية",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:78,similar:["Isabel","Irene","Ilaria"]},
+    {name:"Valentina",pronunciation:"val-en-TEE-nuh",meaning:"Strong, healthy",meaningAr:"القوية الصحيحة",origin:"Latin",originAr:"لاتيني",culture:"spanish",style:"classic",popularity:83,similar:["Victoria","Viviana","Vera"]},
+    {name:"Sofía",pronunciation:"so-FEE-ah",meaning:"Wisdom",meaningAr:"الحكمة",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:91,similar:["Lucia","Laura","Lola"]},
+    {name:"Sienna",pronunciation:"see-EN-uh",meaning:"Reddish-brown, city in Italy",meaningAr:"اللون البني المحمر",origin:"Italian",originAr:"إيطالي",culture:"australian",style:"modern",popularity:81,similar:["Sierra","Stella","Scarlett"]},
+    {name:"Matilda",pronunciation:"mah-TIL-duh",meaning:"Mighty in battle",meaningAr:"القوية في المعركة",origin:"Germanic",originAr:"جرماني",culture:"australian",style:"vintage",popularity:79,similar:["Mathilda","Martha","Mabel"]},
+    {name:"Harper",pronunciation:"HAR-per",meaning:"Harp player",meaningAr:"عازفة القيثارة",origin:"English",originAr:"إنجليزي",culture:"american",style:"modern",popularity:89,similar:["Harlow","Hadley","Haven"]},
+    {name:"Willow",pronunciation:"WIL-oh",meaning:"Graceful and slender tree",meaningAr:"شجرة الصفصاف الرشيقة",origin:"English",originAr:"إنجليزي",culture:"american",style:"modern",popularity:87,similar:["Winter","Wren","Waverly"]},
+    {name:"Hazel",pronunciation:"HAY-zul",meaning:"The hazel tree",meaningAr:"شجرة البندق",origin:"English",originAr:"إنجليزي",culture:"british",style:"vintage",popularity:83,similar:["Holly","Heather","Honor"]},
+    {name:"Violet",pronunciation:"VY-oh-let",meaning:"Purple flower",meaningAr:"زهرة البنفسج",origin:"Latin",originAr:"لاتيني",culture:"british",style:"vintage",popularity:82,similar:["Vivienne","Victoria","Verity"]},
+    {name:"Aurora",pronunciation:"aw-ROR-uh",meaning:"Dawn, goddess of morning",meaningAr:"الفجر إلهة الصباح",origin:"Latin",originAr:"لاتيني",culture:"american",style:"modern",popularity:88,similar:["Aurelia","Arabella","Athena"]},
+    {name:"Zoe",pronunciation:"ZOH-ee",meaning:"Life",meaningAr:"الحياة",origin:"Greek",originAr:"يوناني",culture:"american",style:"short",popularity:86,similar:["Zoey","Zara","Zelda"]},
+    {name:"Elsa",pronunciation:"EL-suh",meaning:"Noble, pledged to God",meaningAr:"النبيلة المخصصة لله",origin:"German",originAr:"ألماني",culture:"german",style:"classic",popularity:74,similar:["Else","Elke","Emma"]},
+    {name:"Lena",pronunciation:"LAY-nuh",meaning:"Light, torch",meaningAr:"الضوء والشعلة",origin:"German",originAr:"ألماني",culture:"german",style:"short",popularity:77,similar:["Lena","Lina","Lea"]},
+    {name:"Mila",pronunciation:"MEE-luh",meaning:"Gracious, dear",meaningAr:"الرقيقة العزيزة",origin:"Slavic",originAr:"سلافي",culture:"canadian",style:"modern",popularity:88,similar:["Mila","Maya","Mara"]},
+    {name:"Zara",pronunciation:"ZAR-uh",meaning:"Princess, flower",meaningAr:"الأميرة والزهرة",origin:"Arabic/Hebrew",originAr:"عربي/عبري",culture:"british",style:"short",popularity:84,similar:["Sara","Zoe","Lara"]},
+    {name:"Ivy",pronunciation:"EYE-vee",meaning:"Faithfulness, eternal life",meaningAr:"الوفاء والحياة الأبدية",origin:"English",originAr:"إنجليزي",culture:"british",style:"short",popularity:83,similar:["Iris","Isla","Imogen"]},
+    {name:"Nova",pronunciation:"NOH-vuh",meaning:"New, star that brightens suddenly",meaningAr:"نجمة جديدة تضيء فجأة",origin:"Latin",originAr:"لاتيني",culture:"american",style:"modern",popularity:87,similar:["Nora","Nina","Nadia"]},
+    {name:"Penelope",pronunciation:"peh-NEL-oh-pee",meaning:"Weaver, faithful wife",meaningAr:"الحاكة الزوجة الوفية",origin:"Greek",originAr:"يوناني",culture:"american",style:"classic",popularity:85,similar:["Penny","Persephone","Phoebe"]},
+    {name:"Charlotte",pronunciation:"SHAR-lot",meaning:"Free woman",meaningAr:"المرأة الحرة",origin:"French",originAr:"فرنسي",culture:"french",style:"classic",popularity:94,similar:["Charlie","Charlene","Chloé"]},
+    {name:"Stella",pronunciation:"STEL-uh",meaning:"Star",meaningAr:"النجمة",origin:"Latin",originAr:"لاتيني",culture:"american",style:"classic",popularity:86,similar:["Estelle","Starla","Bella"]},
+    {name:"Nora",pronunciation:"NOR-uh",meaning:"Honor, light",meaningAr:"الشرف والنور",origin:"Irish",originAr:"إيرلندي",culture:"american",style:"short",popularity:85,similar:["Norah","Nola","Nina"]},
+    {name:"Abigail",pronunciation:"AB-ih-gayl",meaning:"Father's joy",meaningAr:"فرحة الأب",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:83,similar:["Abby","Abbey","Arabella"]},
+    {name:"Lily",pronunciation:"LIL-ee",meaning:"Pure, beautiful flower",meaningAr:"الزهرة النقية الجميلة",origin:"English",originAr:"إنجليزي",culture:"british",style:"classic",popularity:90,similar:["Lila","Lilah","Lillian"]},
+    {name:"Eleanor",pronunciation:"EL-ih-nor",meaning:"Bright, shining one",meaningAr:"المضيئة اللامعة",origin:"Greek",originAr:"يوناني",culture:"british",style:"classic",popularity:82,similar:["Elena","Eliza","Elizabeth"]},
+    {name:"Grace",pronunciation:"GRAYS",meaning:"Elegance, divine grace",meaningAr:"الأناقة والرحمة الإلهية",origin:"Latin",originAr:"لاتيني",culture:"american",style:"short",popularity:88,similar:["Gracie","Greta","Gemma"]},
+    {name:"Amelia",pronunciation:"ah-MEE-lee-uh",meaning:"Work, industrious",meaningAr:"العمل والاجتهاد",origin:"Germanic",originAr:"جرماني",culture:"british",style:"classic",popularity:93,similar:["Amelie","Amalia","Emily"]},
+    {name:"Scarlett",pronunciation:"SKAR-let",meaning:"Red, bright color",meaningAr:"اللون الأحمر الزاهي",origin:"English",originAr:"إنجليزي",culture:"american",style:"vintage",popularity:86,similar:["Scar","Scarlet","Sienna"]},
+    {name:"Iris",pronunciation:"EYE-ris",meaning:"Rainbow, messenger of gods",meaningAr:"قوس قزح رسولة الآلهة",origin:"Greek",originAr:"يوناني",culture:"british",style:"rare",popularity:78,similar:["Irene","Isadora","Ida"]},
+    {name:"Camille",pronunciation:"kah-MEEL",meaning:"Ceremonial attendant",meaningAr:"المرافقة في الطقوس",origin:"French",originAr:"فرنسي",culture:"french",style:"classic",popularity:80,similar:["Camelia","Camellia","Camila"]},
+    {name:"Ellie",pronunciation:"EL-ee",meaning:"Shining light",meaningAr:"الضوء المشع",origin:"English",originAr:"إنجليزي",culture:"australian",style:"short",popularity:88,similar:["Ella","Elena","Eliza"]},
+    {name:"Aria",pronunciation:"AH-ree-uh",meaning:"Song, air",meaningAr:"الأغنية والهواء",origin:"Italian",originAr:"إيطالي",culture:"american",style:"modern",popularity:89,similar:["Ariana","Ariel","Ariella"]},
+    {name:"Skylar",pronunciation:"SKY-ler",meaning:"Eternal life, scholar",meaningAr:"الحياة الأبدية العالمة",origin:"Dutch",originAr:"هولندي",culture:"canadian",style:"modern",popularity:79,similar:["Skye","Skylark","Skyler"]},
+    {name:"Zoë",pronunciation:"ZOH-ee",meaning:"Life",meaningAr:"الحياة",origin:"Greek",originAr:"يوناني",culture:"french",style:"short",popularity:83,similar:["Zora","Zola","Zara"]},
+    {name:"Wren",pronunciation:"REN",meaning:"Small bird",meaningAr:"الطائر الصغير",origin:"English",originAr:"إنجليزي",culture:"newzealand",style:"short",popularity:74,similar:["Wynn","Winter","Winona"]},
+    {name:"Brontë",pronunciation:"BRON-tay",meaning:"Thunder",meaningAr:"الرعد",origin:"Celtic",originAr:"سلتيك",culture:"newzealand",style:"rare",popularity:65,similar:["Bronte","Brooke","Blair"]}
+  ],
+  boy: [
+    {name:"Liam",pronunciation:"LEE-um",meaning:"Strong-willed warrior and protector",meaningAr:"المحارب القوي الإرادة والحامي",origin:"Irish",originAr:"إيرلندي",culture:"american",style:"classic",popularity:98,similar:["Leo","Logan","Lucas"]},
+    {name:"Noah",pronunciation:"NOH-uh",meaning:"Rest and comfort",meaningAr:"الراحة والسكينة",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:97,similar:["Noel","Nate","Neil"]},
+    {name:"Oliver",pronunciation:"OL-ih-ver",meaning:"Olive tree, symbol of peace",meaningAr:"شجرة الزيتون رمز السلام",origin:"Latin",originAr:"لاتيني",culture:"british",style:"classic",popularity:95,similar:["Owen","Oscar","Otto"]},
+    {name:"Elijah",pronunciation:"ih-LY-juh",meaning:"My God is Yahweh",meaningAr:"إلهي هو الرب",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:93,similar:["Eli","Elias","Ezra"]},
+    {name:"James",pronunciation:"JAYMZ",meaning:"Supplanter",meaningAr:"المحل لغيره",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:94,similar:["Jake","Jack","Jasper"]},
+    {name:"Aiden",pronunciation:"AY-den",meaning:"Little fire",meaningAr:"النار الصغيرة",origin:"Irish",originAr:"إيرلندي",culture:"american",style:"modern",popularity:91,similar:["Ayden","Aidan","Adrian"]},
+    {name:"Lucas",pronunciation:"LOO-kus",meaning:"Light, illumination",meaningAr:"الضوء والإنارة",origin:"Latin",originAr:"لاتيني",culture:"american",style:"classic",popularity:90,similar:["Luke","Luca","Lukas"]},
+    {name:"Mason",pronunciation:"MAY-sun",meaning:"Stone worker, builder",meaningAr:"البنّاء العامل بالحجارة",origin:"English",originAr:"إنجليزي",culture:"american",style:"modern",popularity:89,similar:["Maxwell","Morgan","Marcus"]},
+    {name:"Ethan",pronunciation:"EE-thun",meaning:"Strong, firm, enduring",meaningAr:"القوي الصلب الدائم",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:88,similar:["Evan","Edmund","Edwin"]},
+    {name:"Logan",pronunciation:"LOH-gun",meaning:"Little hollow",meaningAr:"الوادي الصغير",origin:"Scottish",originAr:"اسكتلندي",culture:"canadian",style:"modern",popularity:87,similar:["Liam","Lincoln","Leon"]},
+    {name:"Theodore",pronunciation:"THEE-oh-dor",meaning:"Gift of God",meaningAr:"هبة الله",origin:"Greek",originAr:"يوناني",culture:"british",style:"classic",popularity:86,similar:["Theo","Thomas","Timothy"]},
+    {name:"Henry",pronunciation:"HEN-ree",meaning:"Ruler of the home",meaningAr:"حاكم البيت",origin:"Germanic",originAr:"جرماني",culture:"british",style:"classic",popularity:85,similar:["Harry","Harold","Harvey"]},
+    {name:"Archie",pronunciation:"AR-chee",meaning:"Truly brave",meaningAr:"الشجاع حقاً",origin:"Germanic",originAr:"جرماني",culture:"british",style:"vintage",popularity:80,similar:["Arthur","Albie","Alfie"]},
+    {name:"Freddie",pronunciation:"FRED-ee",meaning:"Peaceful ruler",meaningAr:"الحاكم السلمي",origin:"Germanic",originAr:"جرماني",culture:"british",style:"vintage",popularity:78,similar:["Frederick","Franco","Fraser"]},
+    {name:"Hugo",pronunciation:"HYOO-goh",meaning:"Mind, heart, spirit",meaningAr:"العقل والقلب والروح",origin:"Germanic",originAr:"جرماني",culture:"french",style:"classic",popularity:82,similar:["Hubert","Humphrey","Howard"]},
+    {name:"Théo",pronunciation:"TAY-oh",meaning:"Divine gift",meaningAr:"الهبة الإلهية",origin:"French",originAr:"فرنسي",culture:"french",style:"short",popularity:84,similar:["Thomas","Thibault","Timéo"]},
+    {name:"Mathis",pronunciation:"mah-TEES",meaning:"Gift of God",meaningAr:"هبة الله",origin:"French",originAr:"فرنسي",culture:"french",style:"rare",popularity:73,similar:["Matthieu","Mathieu","Martin"]},
+    {name:"Mateo",pronunciation:"mah-TAY-oh",meaning:"Gift of God",meaningAr:"هبة الله",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:88,similar:["Matteo","Marcos","Miguel"]},
+    {name:"Santiago",pronunciation:"san-tee-AH-goh",meaning:"Saint James",meaningAr:"القديس يعقوب",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:83,similar:["Sebastián","Sergio","Samuel"]},
+    {name:"Alejandro",pronunciation:"ah-leh-HAN-droh",meaning:"Defender of mankind",meaningAr:"المدافع عن البشرية",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:80,similar:["Alex","Alexander","Alexis"]},
+    {name:"Kai",pronunciation:"KY",meaning:"Sea, ocean",meaningAr:"البحر والمحيط",origin:"Hawaiian",originAr:"هاوايي",culture:"newzealand",style:"short",popularity:79,similar:["Kion","Kahu","Keane"]},
+    {name:"Luca",pronunciation:"LOO-kuh",meaning:"Light, bringer of light",meaningAr:"النور وحامل النور",origin:"Italian",originAr:"إيطالي",culture:"australian",style:"short",popularity:83,similar:["Lucas","Luke","Lukas"]},
+    {name:"Felix",pronunciation:"FEE-liks",meaning:"Happy and fortunate",meaningAr:"السعيد والمحظوظ",origin:"Latin",originAr:"لاتيني",culture:"german",style:"classic",popularity:80,similar:["Finn","Fynn","Filip"]},
+    {name:"Leon",pronunciation:"LEE-on",meaning:"Lion",meaningAr:"الأسد",origin:"Greek/German",originAr:"يوناني/ألماني",culture:"german",style:"short",popularity:78,similar:["Leo","Leonhard","Leopold"]},
+    {name:"Finn",pronunciation:"FIN",meaning:"Fair, white",meaningAr:"الأبيض الفاتح",origin:"Irish",originAr:"إيرلندي",culture:"canadian",style:"short",popularity:82,similar:["Flynn","Finley","Fionn"]},
+    {name:"Atticus",pronunciation:"AT-ih-kus",meaning:"From Athens, man of Attica",meaningAr:"من أثينا رجل أتيكا",origin:"Greek",originAr:"يوناني",culture:"american",style:"rare",popularity:74,similar:["Atlas","Arlo","Archer"]},
+    {name:"Ezra",pronunciation:"EZ-ruh",meaning:"Helper",meaningAr:"المساعد المعين",origin:"Hebrew",originAr:"عبري",culture:"american",style:"modern",popularity:84,similar:["Ethan","Eli","Evan"]},
+    {name:"Jack",pronunciation:"JAK",meaning:"God is gracious",meaningAr:"الله رحيم كريم",origin:"English",originAr:"إنجليزي",culture:"british",style:"short",popularity:90,similar:["Jake","Jackson","Jax"]},
+    {name:"Charlie",pronunciation:"CHAR-lee",meaning:"Free man",meaningAr:"الرجل الحر",origin:"Germanic",originAr:"جرماني",culture:"british",style:"vintage",popularity:87,similar:["Charles","Charley","Chase"]},
+    {name:"George",pronunciation:"JORJ",meaning:"Farmer, earthworker",meaningAr:"الفلاح العامل بالأرض",origin:"Greek",originAr:"يوناني",culture:"british",style:"classic",popularity:86,similar:["Gerald","Gregory","Gilbert"]},
+    {name:"Sebastian",pronunciation:"suh-BAS-chun",meaning:"Venerable, revered",meaningAr:"الموقر المحترم",origin:"Greek",originAr:"يوناني",culture:"american",style:"classic",popularity:85,similar:["Sébastien","Seth","Simon"]},
+    {name:"William",pronunciation:"WIL-yum",meaning:"Resolute protector",meaningAr:"الحامي الحازم",origin:"Germanic",originAr:"جرماني",culture:"american",style:"classic",popularity:91,similar:["Will","Wiliam","Willis"]},
+    {name:"Benjamin",pronunciation:"BEN-juh-min",meaning:"Son of the right hand",meaningAr:"ابن اليد اليمنى",origin:"Hebrew",originAr:"عبري",culture:"american",style:"classic",popularity:89,similar:["Ben","Benny","Bennett"]},
+    {name:"Alexander",pronunciation:"al-ig-ZAN-der",meaning:"Defender of the people",meaningAr:"المدافع عن الشعب",origin:"Greek",originAr:"يوناني",culture:"american",style:"classic",popularity:88,similar:["Alex","Alec","Alexis"]},
+    {name:"Arlo",pronunciation:"AR-loh",meaning:"Fortified hill",meaningAr:"التل المحصن",origin:"English",originAr:"إنجليزي",culture:"australian",style:"modern",popularity:78,similar:["Arlow","Ari","Arlen"]},
+    {name:"Milo",pronunciation:"MY-loh",meaning:"Soldier, merciful",meaningAr:"الجندي الرحيم",origin:"Germanic",originAr:"جرماني",culture:"american",style:"modern",popularity:81,similar:["Miles","Milou","Milan"]},
+    {name:"Leo",pronunciation:"LEE-oh",meaning:"Lion",meaningAr:"الأسد",origin:"Latin",originAr:"لاتيني",culture:"american",style:"short",popularity:91,similar:["Leonardo","Leon","Leopold"]},
+    {name:"Jasper",pronunciation:"JAS-per",meaning:"Treasurer, precious stone",meaningAr:"أمين الخزانة الحجر الكريم",origin:"Persian",originAr:"فارسي",culture:"british",style:"rare",popularity:76,similar:["James","Jerome","Julius"]},
+    {name:"Oscar",pronunciation:"OS-kar",meaning:"God spear, divine strength",meaningAr:"رمح الله القوة الإلهية",origin:"Old Norse",originAr:"نوردي قديم",culture:"british",style:"vintage",popularity:80,similar:["Otto","Oskar","Oswin"]},
+    {name:"Remy",pronunciation:"RAY-mee",meaning:"Oarsman",meaningAr:"المجذاف المبحر",origin:"French",originAr:"فرنسي",culture:"french",style:"short",popularity:77,similar:["Rémi","Renaud","Roland"]},
+    {name:"Louis",pronunciation:"LOO-ee",meaning:"Famous warrior",meaningAr:"المحارب الشهير",origin:"French",originAr:"فرنسي",culture:"french",style:"classic",popularity:82,similar:["Lewis","Luis","Louie"]},
+    {name:"Maxime",pronunciation:"mak-SEEM",meaning:"The greatest",meaningAr:"الأعظم",origin:"French",originAr:"فرنسي",culture:"french",style:"classic",popularity:79,similar:["Maximus","Max","Maximilian"]},
+    {name:"Emilio",pronunciation:"eh-MEE-lee-oh",meaning:"Rival, eager",meaningAr:"المنافس المتحمس",origin:"Spanish",originAr:"إسباني",culture:"spanish",style:"classic",popularity:76,similar:["Emil","Emiliano","Emile"]},
+    {name:"Rafael",pronunciation:"RAF-ee-el",meaning:"God has healed",meaningAr:"الله شفى",origin:"Hebrew",originAr:"عبري",culture:"spanish",style:"classic",popularity:80,similar:["Raphael","Ramon","Ricardo"]},
+    {name:"Niklas",pronunciation:"NIK-las",meaning:"People's victory",meaningAr:"انتصار الشعب",origin:"German",originAr:"ألماني",culture:"german",style:"classic",popularity:72,similar:["Nikolai","Nikolas","Nicholas"]},
+    {name:"Bastian",pronunciation:"BAS-tee-an",meaning:"Venerable",meaningAr:"الموقر",origin:"German",originAr:"ألماني",culture:"german",style:"short",popularity:70,similar:["Sebastian","Bastion","Basti"]},
+    {name:"Caden",pronunciation:"KAY-den",meaning:"Fighter, battle",meaningAr:"المقاتل في المعركة",origin:"Welsh",originAr:"ويلزي",culture:"canadian",style:"modern",popularity:75,similar:["Caiden","Cayden","Kaden"]},
+    {name:"Callum",pronunciation:"KAL-um",meaning:"Dove",meaningAr:"الحمامة",origin:"Scottish",originAr:"اسكتلندي",culture:"newzealand",style:"classic",popularity:76,similar:["Calum","Calvin","Camden"]},
+    {name:"Hamish",pronunciation:"HAY-mish",meaning:"Supplanter",meaningAr:"المحل محل غيره",origin:"Scottish",originAr:"اسكتلندي",culture:"newzealand",style:"rare",popularity:68,similar:["Harris","Harvey","Harold"]},
+    {name:"Archer",pronunciation:"AR-cher",meaning:"Bowman",meaningAr:"رامي السهام",origin:"English",originAr:"إنجليزي",culture:"australian",style:"modern",popularity:78,similar:["Archibald","Arden","Ari"]}
+  ]
+};
+
+const TRENDING_GIRL = ["Olivia","Emma","Luna","Aria","Willow","Aurora","Mia","Zoe","Isla","Nova"];
+const TRENDING_BOY = ["Liam","Noah","Oliver","Leo","Luca","Kai","Finn","Ezra","Milo","Arlo"];
+
+// ===== STATE =====
+let lang='en', gender='girl', culture='all', style='all';
+let favorites=JSON.parse(localStorage.getItem('bnDB')||'[]');
+let currentResults=[], abortSearch=false, isLoading=false;
+let shareTarget=null;
+
+// ===== TRANSLATIONS =====
+const T={
+  en:{girlLbl:'Girl',boyLbl:'Boy',searchLbl:'Search by first letter or name',cultureLbl:'Culture / Origin',styleLbl:'Style / Era',favTitleTxt:'Favourites',clearLbl:'Clear all',welcomeTitle:'Begin your search',welcomeSub:'Type a letter to discover names, or explore by culture and style.',loadTxt:'Searching...',details:'Details',meaning:'MEANING',origin:'ORIGIN',popularity:'POPULARITY',similar:'SIMILAR NAMES',saved:'saved',namesFound:'names found',nameInputPh:'or type a name / meaning...',letterPh:'A',errEmpty:'Please type a letter or name first.',noResults:'No names found. Try a different search.'},
+  ar:{girlLbl:'بنت',boyLbl:'ولد',searchLbl:'ابحث بحرف أو اسم',cultureLbl:'الثقافة / الأصل',styleLbl:'الستايل / العصر',favTitleTxt:'المفضلة',clearLbl:'مسح الكل',welcomeTitle:'ابدأ البحث',welcomeSub:'اكتب حرفاً للبحث عن أسماء أو تصفّح حسب الثقافة والستايل.',loadTxt:'جارٍ البحث...',details:'تفاصيل',meaning:'المعنى',origin:'الأصل',popularity:'الشعبية',similar:'أسماء مشابهة',saved:'محفوظ',namesFound:'اسم',nameInputPh:'أو اكتب اسماً أو معنى...',letterPh:'أ',errEmpty:'الرجاء كتابة حرف أو اسم أولاً.',noResults:'لا توجد نتائج. جرّب بحثاً آخر.'}
+};
+function t(k){return T[lang][k]||T.en[k]||'';}
+
+// ===== PAGES =====
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(el=>{
+    el.classList.toggle('active', el.textContent.toLowerCase().includes(p==='home'?'home':p));
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleMobileMenu(){
+  const m=document.getElementById('mobileMenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+
+function quickSearch(g,c){
+  setGender(g); setFilter('culture',c);
+  showPage('home');
+  document.getElementById('letterIn').value='';
+  document.getElementById('nameIn').value='';
+  doSearch();
+}
+
+// ===== LANG =====
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+  document.documentElement.lang=l;
+  document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  applyT();
+  renderGrid(currentResults);
+  renderFavs();
+}
+
+function applyT(){
+  document.getElementById('girlLbl').textContent=t('girlLbl');
+  document.getElementById('boyLbl').textContent=t('boyLbl');
+  document.getElementById('searchLbl').textContent=t('searchLbl');
+  document.getElementById('cultureLbl').textContent=t('cultureLbl');
+  document.getElementById('styleLbl').textContent=t('styleLbl');
+  document.getElementById('favTitleTxt').textContent=t('favTitleTxt');
+  document.getElementById('clearLbl').textContent=t('clearLbl');
+  document.getElementById('welcomeTitle').textContent=t('welcomeTitle');
+  document.getElementById('welcomeSub').textContent=t('welcomeSub');
+  document.getElementById('loadTxt').textContent=t('loadTxt');
+  document.getElementById('nameIn').placeholder=t('nameInputPh');
+  document.getElementById('letterIn').placeholder=t('letterPh');
+  updateFavCount();
+}
+
+// ===== GENDER =====
+function setGender(g){
+  gender=g;
+  document.querySelectorAll('.gender-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.gender===g);
+  });
+  renderTrending();
+}
+
+// ===== FILTERS =====
+function setFilter(type,val){
+  if(type==='culture'){culture=val; document.querySelectorAll('[data-culture]').forEach(b=>b.classList.toggle('active',b.dataset.culture===val));}
+  else{style=val; document.querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===val));}
+}
+
+// ===== SEARCH =====
+function doSearch(){
+  if(isLoading)return;
+  const letter=document.getElementById('letterIn').value.trim().toUpperCase();
+  const query=document.getElementById('nameIn').value.trim().toLowerCase();
+  if(!letter&&!query){showErr(t('errEmpty'));return;}
+  hideErr(); abortSearch=false;
+  isLoading=true;
+  setLoading(true);
+
+  setTimeout(()=>{
+    if(abortSearch){isLoading=false;setLoading(false);return;}
+    let results=[...NAMES_DB[gender]];
+    if(letter) results=results.filter(n=>n.name.toUpperCase().startsWith(letter));
+    if(query&&!letter) results=results.filter(n=>
+      n.name.toLowerCase().includes(query)||
+      n.meaning.toLowerCase().includes(query)||
+      n.meaningAr.includes(query)||
+      n.origin.toLowerCase().includes(query)
+    );
+    if(culture!=='all') results=results.filter(n=>n.culture===culture);
+    if(style!=='all') results=results.filter(n=>n.style===style);
+    currentResults=results;
+    renderGrid(results);
+    isLoading=false;
+    setLoading(false);
+  },600);
+}
+
+function stopSearch(){
+  abortSearch=true;
+  isLoading=false;
+  setLoading(false);
+}
+
+document.getElementById('letterIn').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+document.getElementById('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+document.getElementById('letterIn').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/[^a-zA-Z\u0600-\u06FF]/g,'').slice(0,1);
+});
+
+// ===== RENDER =====
+function renderGrid(names){
+  const grid=document.getElementById('namesGrid');
+  const bar=document.getElementById('resultsBar');
+  if(!names||names.length===0){
+    grid.innerHTML=`<div class="welcome-state" style="grid-column:1/-1"><div class="welcome-icon">✦</div><div class="welcome-title">${names&&names.length===0?t('noResults'):t('welcomeTitle')}</div><div class="welcome-sub">${names&&names.length===0?'':t('welcomeSub')}</div></div>`;
+    bar.style.display='none';
+    return;
+  }
+  bar.style.display='flex';
+  document.getElementById('resultsCnt').innerHTML=`<strong>${names.length}</strong> ${t('namesFound')}`;
+  updateFavCount();
+  grid.innerHTML=names.map((n,i)=>buildCard(n,i)).join('');
+  grid.querySelectorAll('.name-card').forEach((c,i)=>c.style.animationDelay=`${i*0.04}s`);
+}
+
+function buildCard(n,i){
+  const isFav=favorites.includes(n.name);
+  const nameDisplay=lang==='ar'?n.name:n.name;
+  const meaningDisplay=lang==='ar'?n.meaningAr:n.meaning;
+  const originDisplay=lang==='ar'?n.originAr:n.origin;
+  return `<div class="name-card" id="nc-${i}">
+    <div class="card-top">
+      <div>
+        <div class="name-text">${nameDisplay}</div>
+        <div class="name-phonetic">${n.pronunciation}</div>
+      </div>
+      <div class="card-actions">
+        <button class="share-btn" onclick="openShare('${n.name}','${meaningDisplay.replace(/'/g,"\\'")}')" title="Share">📤</button>
+        <button class="heart-btn" onclick="toggleFav('${n.name}',this)" title="Save">${isFav?'❤️':'🤍'}</button>
+      </div>
+    </div>
+    <div class="card-tags">
+      <span class="ctag">${originDisplay}</span>
+      <span class="ctag">${n.style}</span>
+      <span class="ctag">${n.culture}</span>
+    </div>
+    <button class="expand-btn" onclick="toggleSlide('nc-${i}')">
+      <span class="expand-lbl">${t('details')}</span>
+      <span class="expand-arr">⌄</span>
+    </button>
+    <div class="slide-panel">
+      <div class="slide-inner">
+        <div class="drow"><div class="dicon">📖</div><div><div class="dkey">${t('meaning')}</div><div class="dval">${meaningDisplay}</div></div></div>
+        <div class="drow"><div class="dicon">🌍</div><div><div class="dkey">${t('origin')}</div><div class="dval">${originDisplay}</div></div></div>
+        <div class="drow"><div class="dicon">⭐</div><div style="flex:1"><div class="dkey">${t('popularity')}</div><div class="pop-track"><div class="pop-fill" style="--pop:${n.popularity}%"></div></div></div></div>
+        ${n.similar?.length?`<div class="drow"><div class="dicon">🔤</div><div><div class="dkey">${t('similar')}</div><div class="sim-wrap">${n.similar.map(s=>`<span class="sim-chip" onclick="searchSim('${s}')">${s}</span>`).join('')}</div></div></div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleSlide(id){
+  const card=document.getElementById(id);
+  const isOpen=card.classList.contains('open');
+  document.querySelectorAll('.name-card.open').forEach(c=>c.classList.remove('open'));
+  if(!isOpen)card.classList.add('open');
+}
+
+function searchSim(name){
+  document.getElementById('letterIn').value='';
+  document.getElementById('nameIn').value=name;
+  doSearch();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== TRENDING =====
+function renderTrending(){
+  const list=document.getElementById('trendingList');
+  const names=gender==='girl'?TRENDING_GIRL:TRENDING_BOY;
+  list.innerHTML=names.map((n,i)=>`
+    <div class="trend-item" onclick="quickTrend('${n}')">
+      <span class="trend-num">#${i+1}</span>
+      <span>${n}</span>
+    </div>`).join('');
+}
+
+function quickTrend(name){
+  document.getElementById('letterIn').value='';
+  document.getElementById('nameIn').value=name;
+  doSearch();
+  document.getElementById('namesGrid').scrollIntoView({behavior:'smooth'});
+}
+
+// ===== FAVORITES =====
+function toggleFav(name,btn){
+  const idx=favorites.indexOf(name);
+  if(idx===-1){
+    favorites.push(name);
+    btn.textContent='❤️';
+    btn.classList.add('pop');
+    setTimeout(()=>btn.classList.remove('pop'),400);
+    spawnConfetti(btn);
+  }else{
+    favorites.splice(idx,1);
+    btn.textContent='🤍';
+  }
+  localStorage.setItem('bnDB',JSON.stringify(favorites));
+  renderFavs(); updateFavCount();
+}
+
+function renderFavs(){
+  const panel=document.getElementById('favPanel');
+  const chips=document.getElementById('favChips');
+  if(favorites.length===0){panel.classList.remove('show');return;}
+  panel.classList.add('show');
+  chips.innerHTML=favorites.map(n=>`<div class="fav-chip"><span>${n}</span><button class="fav-rm" onclick="rmFav('${n}')">✕</button></div>`).join('');
+}
+
+function rmFav(name){
+  favorites=favorites.filter(f=>f!==name);
+  localStorage.setItem('bnDB',JSON.stringify(favorites));
+  document.querySelectorAll('.name-card').forEach(c=>{
+    const nt=c.querySelector('.name-text');
+    const btn=c.querySelector('.heart-btn');
+    if(nt&&nt.textContent===name&&btn)btn.textContent='🤍';
+  });
+  renderFavs(); updateFavCount();
+}
+
+function clearFavs(){
+  favorites=[];
+  localStorage.setItem('bnDB',JSON.stringify(favorites));
+  document.querySelectorAll('.heart-btn').forEach(b=>b.textContent='🤍');
+  renderFavs(); updateFavCount();
+}
+
+function toggleFavPanel(){document.getElementById('favPanel').classList.toggle('show');}
+function updateFavCount(){document.getElementById('favCntLbl').textContent=`${favorites.length} ${t('saved')}`;}
+
+// ===== LOADING =====
+function setLoading(on){
+  document.getElementById('loadWrap').classList.toggle('show',on);
+  document.getElementById('searchBtn').disabled=on;
+  document.getElementById('stopBtn').classList.toggle('show',on);
+  if(on)document.getElementById('namesGrid').innerHTML='';
+}
+
+// ===== ERROR =====
+function showErr(msg){document.getElementById('errTxt').textContent=msg;document.getElementById('errMsg').classList.add('show');}
+function hideErr(){document.getElementById('errMsg').classList.remove('show');}
+
+// ===== SHARE =====
+function openShare(name,meaning){
+  document.getElementById('shareCardName').textContent=name;
+  document.getElementById('shareCardMeaning').textContent=meaning;
+  shareTarget={name,meaning};
+  document.getElementById('shareModal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('shareModal').classList.remove('show');}
+function closeShareModal(e){if(e.target===document.getElementById('shareModal'))closeModal();}
+
+function shareOn(platform){
+  if(!shareTarget)return;
+  const text=`✨ I love the name "${shareTarget.name}" — ${shareTarget.meaning}\n\nFind your perfect baby name at BABYNAMES.LIVE`;
+  const url='https://babynames.live';
+  const encodedText=encodeURIComponent(text);
+  const encodedUrl=encodeURIComponent(url);
+  const links={
+    facebook:`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`,
+    twitter:`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
+    whatsapp:`https://wa.me/?text=${encodedText}%20${encodedUrl}`,
+    pinterest:`https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`,
+    instagram:`https://www.instagram.com/`
+  };
+  if(platform==='instagram'){
+    navigator.clipboard.writeText(text+'\n'+url).then(()=>alert('Caption copied! Open Instagram and paste it.'));
+    return;
+  }
+  window.open(links[platform],'_blank','width=600,height=500');
+}
+
+function copyLink(){
+  const text=`✨ I love the name "${shareTarget?.name}" — find your perfect baby name at BABYNAMES.LIVE`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=event.target;
+    btn.textContent='✅ Copied!';
+    setTimeout(()=>btn.textContent='🔗 Copy Link',2000);
+  });
+}
+
+// ===== CONFETTI =====
+function spawnConfetti(el){
+  const rect=el.getBoundingClientRect();
+  const colors=['#c9a84c','#e8c97a','#f5e0a0','#8a6f2e','#d4af37'];
+  for(let i=0;i<12;i++){
+    const c=document.createElement('div');
+    c.className='confetti-bit';
+    c.style.cssText=`left:${rect.left+rect.width/2+(Math.random()-0.5)*60}px;top:${rect.top+(Math.random()-0.5)*10}px;background:${colors[Math.floor(Math.random()*colors.length)]};transform:rotate(${Math.random()*360}deg);animation-delay:${Math.random()*0.2}s;animation-duration:${1+Math.random()*0.6}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1800);
+  }
+}
+
+// ===== CONTACT FORM =====
+function submitForm(btn){
+  btn.textContent='✅ Message Sent!';
+  btn.style.background='linear-gradient(135deg,#4caf82,#6dd49e)';
+  setTimeout(()=>{btn.textContent='Send Message ✦';btn.style.background='';},3000);
+}
+
+// ===== INIT =====
+renderTrending();
+renderFavs();
+updateFavCount();
+applyT();
+</script>
+</body>
+</html>

@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BABYNAMES — Find the Perfect Name</title>
 <meta name="description" content="Discover thousands of beautiful baby names from American, British, French, Spanish, German, Australian, Canadian and New Zealand cultures.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>👶</text></svg>">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://babynames.live/">
+<meta property="og:title" content="BABYNAMES — Find the Perfect Name">
+<meta property="og:description" content="Discover beautiful baby names from 8 cultures worldwide.">
+<meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -28,6 +34,27 @@
   --boy: #6b92b8;
   --shadow: 0 2px 24px rgba(0,0,0,0.4);
   --shadow-gold: 0 4px 30px rgba(201,168,76,0.15);
+}
+
+/* ===== LIGHT MODE ===== */
+body.light-mode {
+  --bg: #f8f5ee;
+  --bg2: #f0ead8;
+  --surface: #ffffff;
+  --card: #fffdf9;
+  --border: #e4d9c0;
+  --border2: #d6c89a;
+  --gold: #8b6914;
+  --gold2: #b58a20;
+  --gold3: #6b5010;
+  --gold-dark: #5a4010;
+  --gold-glow: rgba(139,105,20,0.18);
+  --gold-glow2: rgba(139,105,20,0.08);
+  --text: #1c1508;
+  --text2: #3d2e10;
+  --muted: #9a8060;
+  --shadow: 0 2px 24px rgba(0,0,0,0.07);
+  --shadow-gold: 0 4px 30px rgba(139,105,20,0.15);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -59,13 +86,16 @@ body::before {
 /* ===== NAV ===== */
 nav {
   position: sticky; top:0; z-index:100;
-  background: rgba(10,10,8,0.92);
+  background: rgba(10,10,8,0.94);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
   display: flex; align-items: center; justify-content: space-between;
   height: 64px;
+  transition: background 0.4s;
 }
+
+body.light-mode nav { background: rgba(248,245,238,0.96); }
 
 .nav-logo {
   font-family: 'Cormorant Garamond', serif;
@@ -245,7 +275,8 @@ h1.hero-title em {
 
 .search-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
-.search-row { display:flex; gap:10px; align-items:center; }
+.search-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.search-buttons { display:flex; gap:10px; flex-shrink:0; }
 
 .letter-box {
   width: 68px; height: 68px;
@@ -293,18 +324,18 @@ h1.hero-title em {
 .search-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
 
 .stop-btn {
-  height: 68px; padding: 0 18px;
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  color: var(--muted); font-family: 'DM Sans', sans-serif;
-  font-size: 13px; font-weight: 600;
+  width: 100%; height: 46px; padding: 0 20px;
+  background: rgba(232,112,112,0.08);
+  border: 1.5px solid #e87070;
+  border-radius: 12px;
+  color: #e87070; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700;
   cursor: pointer; transition: all 0.3s;
-  flex-shrink:0; display:none;
+  letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 
-.stop-btn:hover { border-color: #e87070; color: #e87070; }
-.stop-btn.show { display:flex; align-items:center; gap:6px; }
+.stop-btn:hover { background: rgba(232,112,112,0.15); box-shadow: 0 4px 20px rgba(232,112,112,0.2); }
 
 /* ===== FILTERS ===== */
 .filters-wrap {
@@ -990,8 +1021,12 @@ footer {
     <button class="nav-link" onclick="showPage('about')">ℹ️ About</button>
     <button class="nav-link" onclick="showPage('privacy')">🔒 Privacy</button>
     <button class="nav-link" onclick="showPage('contact')">✉️ Contact</button>
+    <button class="nav-link mode-btn" id="modeBtn" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
   </div>
-  <button class="nav-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="nav-link mode-btn" id="modeBtnMobile" onclick="toggleMode()" title="Toggle mode">🌙</button>
+    <button class="nav-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  </div>
 </nav>
 
 <!-- ===== HOME PAGE ===== -->
@@ -1020,13 +1055,7 @@ footer {
         <div class="gold-divider"></div>
       </div>
 
-      <!-- Lang switch -->
-      <div class="lang-switch">
-        <div class="lang-toggle">
-          <button class="lang-btn active" data-lang="en" onclick="setLang('en')">🇺🇸 English</button>
-          <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">🇸🇦 العربية</button>
-        </div>
-      </div>
+      <!-- English only -->
 
       <!-- Gender -->
       <div class="gender-row">
@@ -1041,7 +1070,9 @@ footer {
           <input type="text" class="letter-box" id="letterIn" maxlength="1" placeholder="A">
           <input type="text" class="name-box" id="nameIn" placeholder="or type a name / meaning...">
           <button class="search-btn" id="searchBtn" onclick="doSearch()">Search ✦</button>
-          <button class="stop-btn" id="stopBtn" onclick="stopSearch()">⏹ Stop</button>
+        </div>
+        <div class="stop-row" id="stopRow" style="display:none; margin-top:10px;">
+          <button class="stop-btn show" id="stopBtn" onclick="stopSearch()">⏹ Stop searching</button>
         </div>
         <div class="err-msg" id="errMsg"><span>⚠️</span><span id="errTxt"></span></div>
       </div>
@@ -1419,23 +1450,28 @@ const TRENDING_GIRL = ["Olivia","Emma","Luna","Aria","Willow","Aurora","Mia","Zo
 const TRENDING_BOY = ["Liam","Noah","Oliver","Leo","Luca","Kai","Finn","Ezra","Milo","Arlo"];
 
 // ===== STATE =====
-let lang='en', gender='girl', culture='all', style='all';
+let gender='girl', culture='all', style='all';
 let favorites=JSON.parse(localStorage.getItem('bnDB')||'[]');
 let currentResults=[], abortSearch=false, isLoading=false;
 let shareTarget=null;
+let isDark=true;
+let useAPI=true; // Claude API enabled
 
-// ===== TRANSLATIONS =====
-const T={
-  en:{girlLbl:'Girl',boyLbl:'Boy',searchLbl:'Search by first letter or name',cultureLbl:'Culture / Origin',styleLbl:'Style / Era',favTitleTxt:'Favourites',clearLbl:'Clear all',welcomeTitle:'Begin your search',welcomeSub:'Type a letter to discover names, or explore by culture and style.',loadTxt:'Searching...',details:'Details',meaning:'MEANING',origin:'ORIGIN',popularity:'POPULARITY',similar:'SIMILAR NAMES',saved:'saved',namesFound:'names found',nameInputPh:'or type a name / meaning...',letterPh:'A',errEmpty:'Please type a letter or name first.',noResults:'No names found. Try a different search.'},
-  ar:{girlLbl:'بنت',boyLbl:'ولد',searchLbl:'ابحث بحرف أو اسم',cultureLbl:'الثقافة / الأصل',styleLbl:'الستايل / العصر',favTitleTxt:'المفضلة',clearLbl:'مسح الكل',welcomeTitle:'ابدأ البحث',welcomeSub:'اكتب حرفاً للبحث عن أسماء أو تصفّح حسب الثقافة والستايل.',loadTxt:'جارٍ البحث...',details:'تفاصيل',meaning:'المعنى',origin:'الأصل',popularity:'الشعبية',similar:'أسماء مشابهة',saved:'محفوظ',namesFound:'اسم',nameInputPh:'أو اكتب اسماً أو معنى...',letterPh:'أ',errEmpty:'الرجاء كتابة حرف أو اسم أولاً.',noResults:'لا توجد نتائج. جرّب بحثاً آخر.'}
-};
-function t(k){return T[lang][k]||T.en[k]||'';}
+// ===== DARK/LIGHT MODE =====
+function toggleMode(){
+  isDark=!isDark;
+  document.body.classList.toggle('light-mode',!isDark);
+  const icon=isDark?'🌙':'☀️';
+  document.getElementById('modeBtn').textContent=icon;
+  document.getElementById('modeBtnMobile').textContent=icon;
+  localStorage.setItem('bnMode',isDark?'dark':'light');
+}
 
 // ===== PAGES =====
 function showPage(p){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(el=>{
+  document.querySelectorAll('.nav-link:not(.mode-btn)').forEach(el=>{
     el.classList.toggle('active', el.textContent.toLowerCase().includes(p==='home'?'home':p));
   });
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1454,33 +1490,6 @@ function quickSearch(g,c){
   doSearch();
 }
 
-// ===== LANG =====
-function setLang(l){
-  lang=l;
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
-  document.documentElement.lang=l;
-  document.documentElement.dir=l==='ar'?'rtl':'ltr';
-  applyT();
-  renderGrid(currentResults);
-  renderFavs();
-}
-
-function applyT(){
-  document.getElementById('girlLbl').textContent=t('girlLbl');
-  document.getElementById('boyLbl').textContent=t('boyLbl');
-  document.getElementById('searchLbl').textContent=t('searchLbl');
-  document.getElementById('cultureLbl').textContent=t('cultureLbl');
-  document.getElementById('styleLbl').textContent=t('styleLbl');
-  document.getElementById('favTitleTxt').textContent=t('favTitleTxt');
-  document.getElementById('clearLbl').textContent=t('clearLbl');
-  document.getElementById('welcomeTitle').textContent=t('welcomeTitle');
-  document.getElementById('welcomeSub').textContent=t('welcomeSub');
-  document.getElementById('loadTxt').textContent=t('loadTxt');
-  document.getElementById('nameIn').placeholder=t('nameInputPh');
-  document.getElementById('letterIn').placeholder=t('letterPh');
-  updateFavCount();
-}
-
 // ===== GENDER =====
 function setGender(g){
   gender=g;
@@ -1496,33 +1505,59 @@ function setFilter(type,val){
   else{style=val; document.querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===val));}
 }
 
-// ===== SEARCH =====
-function doSearch(){
+// ===== SEARCH — DB + optional API =====
+async function doSearch(){
   if(isLoading)return;
   const letter=document.getElementById('letterIn').value.trim().toUpperCase();
   const query=document.getElementById('nameIn').value.trim().toLowerCase();
-  if(!letter&&!query){showErr(t('errEmpty'));return;}
+  if(!letter&&!query){showErr('Please type a letter or name first.');return;}
   hideErr(); abortSearch=false;
   isLoading=true;
   setLoading(true);
 
-  setTimeout(()=>{
+  // First try local DB
+  let results=[...NAMES_DB[gender]];
+  if(letter) results=results.filter(n=>n.name.toUpperCase().startsWith(letter));
+  if(query&&!letter) results=results.filter(n=>
+    n.name.toLowerCase().includes(query)||
+    n.meaning.toLowerCase().includes(query)||
+    n.origin.toLowerCase().includes(query)
+  );
+  if(culture!=='all') results=results.filter(n=>n.culture===culture);
+  if(style!=='all') results=results.filter(n=>n.style===style);
+
+  // If DB has results, use them (fast)
+  if(results.length>0||!useAPI){
     if(abortSearch){isLoading=false;setLoading(false);return;}
-    let results=[...NAMES_DB[gender]];
-    if(letter) results=results.filter(n=>n.name.toUpperCase().startsWith(letter));
-    if(query&&!letter) results=results.filter(n=>
-      n.name.toLowerCase().includes(query)||
-      n.meaning.toLowerCase().includes(query)||
-      n.meaningAr.includes(query)||
-      n.origin.toLowerCase().includes(query)
-    );
-    if(culture!=='all') results=results.filter(n=>n.culture===culture);
-    if(style!=='all') results=results.filter(n=>n.style===style);
     currentResults=results;
     renderGrid(results);
     isLoading=false;
     setLoading(false);
-  },600);
+    return;
+  }
+
+  // Fallback to AI API if no local results
+  try{
+    const cultureMap={all:'Western (American, British, French, Canadian, Spanish, Australian, New Zealand, German)',american:'American',british:'British',french:'French',canadian:'Canadian',spanish:'Spanish',newzealand:'New Zealand',australian:'Australian',german:'German'};
+    const styleMap={all:'any style',modern:'modern trendy (2020+)',classic:'classic timeless',vintage:'vintage retro (80s/90s)',short:'short and simple (max 5 letters)',rare:'rare and unique'};
+    const prompt=`Generate exactly 12 unique ${gender} baby names${letter?' starting with letter "'+letter+'"':''}${query?' related to "'+query+'"':''}.
+Culture: ${cultureMap[culture]||'Western'}. Style: ${styleMap[style]||'any'}.
+Return ONLY a JSON array, no markdown. Each object: {"name":"","pronunciation":"","meaning":"","origin":"","culture":"american|british|french|canadian|spanish|newzealand|australian|german","style":"modern|classic|vintage|short|rare","popularity":0-100,"similar":["","",""]}
+Start with [ end with ]`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    if(abortSearch){isLoading=false;setLoading(false);return;}
+    const data=await res.json();
+    const raw=data.content?.find(b=>b.type==='text')?.text||'[]';
+    const names=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    currentResults=names;
+    renderGrid(names);
+  }catch(e){
+    showErr('Could not connect to AI. Showing available results.');
+    currentResults=results;
+    renderGrid(results);
+  }
+  isLoading=false;
+  setLoading(false);
 }
 
 function stopSearch(){
@@ -1542,12 +1577,12 @@ function renderGrid(names){
   const grid=document.getElementById('namesGrid');
   const bar=document.getElementById('resultsBar');
   if(!names||names.length===0){
-    grid.innerHTML=`<div class="welcome-state" style="grid-column:1/-1"><div class="welcome-icon">✦</div><div class="welcome-title">${names&&names.length===0?t('noResults'):t('welcomeTitle')}</div><div class="welcome-sub">${names&&names.length===0?'':t('welcomeSub')}</div></div>`;
+    grid.innerHTML=`<div class="welcome-state" style="grid-column:1/-1"><div class="welcome-icon">✦</div><div class="welcome-title">${names&&names.length===0?'No names found. Try a different search.':'Begin your search'}</div><div class="welcome-sub">${names&&names.length===0?'':'Type a letter to discover names, or explore by culture and style.'}</div></div>`;
     bar.style.display='none';
     return;
   }
   bar.style.display='flex';
-  document.getElementById('resultsCnt').innerHTML=`<strong>${names.length}</strong> ${t('namesFound')}`;
+  document.getElementById('resultsCnt').innerHTML=`<strong>${names.length}</strong> names found`;
   updateFavCount();
   grid.innerHTML=names.map((n,i)=>buildCard(n,i)).join('');
   grid.querySelectorAll('.name-card').forEach((c,i)=>c.style.animationDelay=`${i*0.04}s`);
@@ -1555,35 +1590,34 @@ function renderGrid(names){
 
 function buildCard(n,i){
   const isFav=favorites.includes(n.name);
-  const nameDisplay=lang==='ar'?n.name:n.name;
-  const meaningDisplay=lang==='ar'?n.meaningAr:n.meaning;
-  const originDisplay=lang==='ar'?n.originAr:n.origin;
+  const meaning=n.meaning||'—';
+  const origin=n.origin||'—';
   return `<div class="name-card" id="nc-${i}">
     <div class="card-top">
       <div>
-        <div class="name-text">${nameDisplay}</div>
-        <div class="name-phonetic">${n.pronunciation}</div>
+        <div class="name-text">${n.name}</div>
+        <div class="name-phonetic">${n.pronunciation||''}</div>
       </div>
       <div class="card-actions">
-        <button class="share-btn" onclick="openShare('${n.name}','${meaningDisplay.replace(/'/g,"\\'")}')" title="Share">📤</button>
+        <button class="share-btn" onclick="openShare('${n.name}','${meaning.replace(/'/g,"\\'")}')" title="Share">📤</button>
         <button class="heart-btn" onclick="toggleFav('${n.name}',this)" title="Save">${isFav?'❤️':'🤍'}</button>
       </div>
     </div>
     <div class="card-tags">
-      <span class="ctag">${originDisplay}</span>
-      <span class="ctag">${n.style}</span>
-      <span class="ctag">${n.culture}</span>
+      <span class="ctag">${origin}</span>
+      <span class="ctag">${n.style||''}</span>
+      <span class="ctag">${n.culture||''}</span>
     </div>
     <button class="expand-btn" onclick="toggleSlide('nc-${i}')">
-      <span class="expand-lbl">${t('details')}</span>
+      <span class="expand-lbl">Details</span>
       <span class="expand-arr">⌄</span>
     </button>
     <div class="slide-panel">
       <div class="slide-inner">
-        <div class="drow"><div class="dicon">📖</div><div><div class="dkey">${t('meaning')}</div><div class="dval">${meaningDisplay}</div></div></div>
-        <div class="drow"><div class="dicon">🌍</div><div><div class="dkey">${t('origin')}</div><div class="dval">${originDisplay}</div></div></div>
-        <div class="drow"><div class="dicon">⭐</div><div style="flex:1"><div class="dkey">${t('popularity')}</div><div class="pop-track"><div class="pop-fill" style="--pop:${n.popularity}%"></div></div></div></div>
-        ${n.similar?.length?`<div class="drow"><div class="dicon">🔤</div><div><div class="dkey">${t('similar')}</div><div class="sim-wrap">${n.similar.map(s=>`<span class="sim-chip" onclick="searchSim('${s}')">${s}</span>`).join('')}</div></div></div>`:''}
+        <div class="drow"><div class="dicon">📖</div><div><div class="dkey">MEANING</div><div class="dval">${meaning}</div></div></div>
+        <div class="drow"><div class="dicon">🌍</div><div><div class="dkey">ORIGIN</div><div class="dval">${origin}</div></div></div>
+        <div class="drow"><div class="dicon">⭐</div><div style="flex:1"><div class="dkey">POPULARITY</div><div class="pop-track"><div class="pop-fill" style="--pop:${n.popularity||50}%"></div></div></div></div>
+        ${n.similar?.length?`<div class="drow"><div class="dicon">🔤</div><div><div class="dkey">SIMILAR NAMES</div><div class="sim-wrap">${n.similar.map(s=>`<span class="sim-chip" onclick="searchSim('${s}')">${s}</span>`).join('')}</div></div></div>`:''}
       </div>
     </div>
   </div>`;
@@ -1665,13 +1699,13 @@ function clearFavs(){
 }
 
 function toggleFavPanel(){document.getElementById('favPanel').classList.toggle('show');}
-function updateFavCount(){document.getElementById('favCntLbl').textContent=`${favorites.length} ${t('saved')}`;}
+function updateFavCount(){document.getElementById('favCntLbl').textContent=`${favorites.length} saved`;}
 
 // ===== LOADING =====
 function setLoading(on){
   document.getElementById('loadWrap').classList.toggle('show',on);
   document.getElementById('searchBtn').disabled=on;
-  document.getElementById('stopBtn').classList.toggle('show',on);
+  document.getElementById('stopRow').style.display=on?'block':'none';
   if(on)document.getElementById('namesGrid').innerHTML='';
 }
 
